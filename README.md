@@ -77,7 +77,8 @@ db "library" {
    atomic {
      field = value
      field = value
-  }```
+  }
+  ```
 - [] Progress indictaor
 - [] Batch updates: build a long query string to run all table updates in one go
 - [] documentation
