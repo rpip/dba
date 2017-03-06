@@ -6,7 +6,7 @@ Tool for anonymizing database records
 
 ## Installation
 
-For now, you need Go and the [glide](https://github.com/Masterminds/glide) build to install dba. Downloadable binaries will be available soon.
+For now, you need Go and the [glide](https://github.com/Masterminds/glide) build tool on your system to get this running. Downloadable binaries will be available soon.
 
 ``` shell
 λ git clone github.com/rpip/dba
@@ -28,9 +28,9 @@ Args:
 
 ## Usage
 
-DBA uses the HCL config language from HashiCorp to describe database parameters and table updates. It's the same config language used in products like Terraform. It's quite flexible, easy to read and as such makes the config seem like a little DSL. It supports basic data types and ternary operations. You can [read more here](https://www.terraform.io/docs/configuration/index.html).
+DBA uses the HCL config language from HashiCorp to describe database parameters and table updates. It's the same config language used in products like Terraform. It's quite flexible, easy to read and as such makes the config seem like a little DSL. It supports basic data types and ternary operations. You can [learn more about HCL here](https://www.terraform.io/docs/configuration/index.html).
 
-``` hcl
+```hcl
 db "library" {
   type = "mysql"
   dsn = "dba:dba123@(:3306)/dbatest?charset=utf8&parseTime=True&loc=Local"
@@ -52,7 +52,6 @@ db "library" {
   }
 
   table "product" {
-
     updates {
       name = "${product()}"
       price = "${digits_n(5)}"
@@ -69,17 +68,11 @@ db "library" {
 ```
 
 ## TODO
-- [] test suite
+- [] test suite, Travis integration or dockerized test suite
 - [] more fake data generators, eg: date, time
-- [] support sqlite, Postgres
-- [] atomic operation:
-   ```hcl
-   atomic {
-     field = value
-     field = value
-  }
-  ```
-- [] Progress indictaor
+- [] support SQLite, Postgres
+- [] Configurable retries
+- [] Progress indicator on the command line
 - [] Batch updates: build a long query string to run all table updates in one go
 - [] documentation
 

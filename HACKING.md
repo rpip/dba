@@ -42,7 +42,9 @@ db "library" {
 
 ```
 
-DBA parses the config above into an internal config format. Below is dump of the Go data structure.
+DBA parses the config above into an internal config format. Using a simple and declarative config format makes changes more explicit and maintainable as opposed to infering the table column types.
+
+Below is a dump of the config data structure in Go.
 
 ```go
 dba.Config{
@@ -107,6 +109,6 @@ dba.Config{
 }
 ```
 
-Each table implements the `Anonymizer` interface. As we iterate through the tables in the config, we call the the `Anonymize` function on each table object and it constructs an UPDATE SQL query string from the updates declared in the config. This SQL query is then run against the delcared DB connection. That simple.
+Each table implements the `Anonymizer` interface. As we iterate through the tables in the config, we call the the `Anonymize` function on each table object and it constructs an UPDATE SQL query string from the updates declared in the config. This SQL query is then run against the declared DB connection. That simple.
 
 The lib folder contains the core of DBA. The goal is to enable usage of DBA as a library within other applications. The `main.go` script in the root folder contains the generated command line tool.
