@@ -1,0 +1,5 @@
+/.GOPATH
+/bin
+vendor/
+vendor/
+NOTES

@@ -1,0 +1,112 @@
+## HACKING DBA
+
+Below is a sample DBA config file.
+
+```hcl
+db "library" {
+  type = "mysql"
+  dsn = "dba:dba123@(:3306)/dbatest?charset=utf8&parseTime=True&loc=Local"
+  verbose = true
+
+  table "user" {
+    // defaults to 'id'
+    primary_key = "user_id"
+
+    updates {
+      first_name = "${first_name()}"
+      last_name = "${first_name()}"
+      username = "${username()}"
+      bio = "${paragraph()}"
+      age = "${digits_n(2)}"
+      gender = "${gender_abbrev()}"
+    }
+  }
+
+  table "product" {
+
+    updates {
+      name = "${product()}"
+      price = "${digits_n(5)}"
+      merchant = "${company()}"
+      brand = "${brand()}"
+    }
+
+  }
+
+  table "blog" {
+    title = "${title()}"
+    body = "${paragraphs_n(5)}"
+    published = true
+  }
+}
+
+```
+
+DBA parses the config above into an internal config format. Below is dump of the Go data structure.
+
+```go
+dba.Config{
+  Databases: []*dba.Database{
+    &dba.Database{
+      meta: dba.meta{
+        Name:     "library",
+        Scope:    "database",
+        Metadata: {
+          "dsn":     "dba:dba123@(:3306)/dbatest?charset=utf8&parseTime=True&loc=Local",
+          "verbose": true,
+          "type":    "mysql",
+        },
+      },
+      Tables: []*dba.Table{
+        &dba.Table{
+          meta: dba.meta{
+            Name:     "user",
+            Scope:    "table",
+            Metadata: {
+              "primary_key": "user_id",
+            },
+          },
+          Updates: {
+            "bio":        "${paragraph()}",
+            "age":        "${digits_n(2)}",
+            "gender":     "${gender_abbrev()}",
+            "first_name": "${first_name()}",
+            "last_name":  "${first_name()}",
+            "username":   "${username()}",
+          },
+        },
+        &dba.Table{
+          meta: dba.meta{
+            Name:     "product",
+            Scope:    "table",
+            Metadata: map[string]interface {}{},
+          },
+          Updates: {
+            "name":     "${product()}",
+            "price":    "${digits_n(3)}",
+            "merchant": "${company()}",
+            "brand":    "${brand()}",
+          },
+        },
+        &dba.Table{
+          meta: dba.meta{
+            Name:     "blog",
+            Scope:    "table",
+            Metadata: {
+              "title":     "${title()}",
+              "body":      "${paragraphs_n(5)}",
+              "published": true,
+            },
+          },
+          Updates: map[string]interface {}{},
+        },
+      },
+      DB: (*sql.DB)(nil),
+    },
+  },
+}
+```
+
+Each table implements the `Anonymizer` interface. As we iterate through the tables in the config, we call the the `Anonymize` function on each table object and it constructs an UPDATE SQL query string from the updates declared in the config. This SQL query is then run against the delcared DB connection. That simple.
+
+The lib folder contains the core of DBA. The goal is to enable usage of DBA as a library within other applications. The `main.go` script in the root folder contains the generated command line tool.
