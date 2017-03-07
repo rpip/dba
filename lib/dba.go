@@ -22,7 +22,7 @@ type Anonymizer interface {
 	Anonymize(*Database, templateConfig) error
 
 	// GetChangesets returns the set of changes to apply
-	GetChangeSets()
+	GetChangeSets(templateConfig)
 }
 
 type meta struct {
