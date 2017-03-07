@@ -3,7 +3,6 @@ package dba
 import (
 	"fmt"
 	"reflect"
-	"sync"
 
 	"github.com/hashicorp/hil"
 	"github.com/hashicorp/hil/ast"
@@ -29,7 +28,7 @@ func newTemplateConfig() templateConfig {
 		&hil.EvalConfig{
 			GlobalScope: &ast.BasicScope{
 				VarMap: map[string]ast.Variable{
-					"hello": ast.Variable{
+					"hello": {
 						Type:  ast.TypeString,
 						Value: "Hello World!",
 					},
@@ -49,19 +48,14 @@ func newTemplateConfig() templateConfig {
 	}
 }
 func registerBuiltins(conf *Config) {
-
 	conf.templateConfig = newTemplateConfig()
-
 	scope := conf.templateConfig.GlobalScope
 
 	for k := range funcMap {
 		// create a closure over the actual function call
 		fn := func(k string) func([]interface{}) (interface{}, error) {
 			return func(inputs []interface{}) (interface{}, error) {
-				var mu sync.RWMutex
-				mu.Lock()
 				val, err := funcCall(funcMap, k)
-				mu.Unlock()
 				result := val[0].Interface().(string)
 				return result, err
 			}
