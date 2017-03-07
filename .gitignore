@@ -1,5 +1,4 @@
-/.GOPATH
-/bin
-vendor/
 vendor/
 NOTES
+.DS_Store
+dba

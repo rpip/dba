@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/rpip/dba.svg?branch=master)](https://travis-ci.org/rpip/dba)
+
 # DBA - Database Anonymizer
 
 Tool for anonymizing database records
@@ -11,7 +13,7 @@ For now, you need Go and the [glide](https://github.com/Masterminds/glide) build
 ``` shell
 λ git clone github.com/rpip/dba
 λ cd dba && make deps && make
-λ ./bin/dba --help
+λ ./dba --help
 usage: dba [<flags>] <conf>
 
 Anonymize database records.
@@ -31,9 +33,9 @@ Args:
 DBA uses the HCL config language from HashiCorp to describe database parameters and table updates. It's the same config language used in products like Terraform. It's quite flexible, easy to read and as such makes the config seem like a little DSL. It supports basic data types and ternary operations. You can [learn more about HCL here](https://www.terraform.io/docs/configuration/index.html).
 
 ```hcl
-db "library" {
+db "store" {
   type = "mysql"
-  dsn = "dba:dba123@(:3306)/dbatest?charset=utf8&parseTime=True&loc=Local"
+  dsn = "dba:123456@(:3306)/dbastore?charset=utf8&parseTime=True&loc=Local"
   verbose = true
 
   table "user" {
@@ -45,30 +47,30 @@ db "library" {
       last_name = "${first_name()}"
       username = "${username()}"
       bio = "${paragraph()}"
-      age = "${digits_n(2) * 2}"
+      age = "${digits_n(2)}"
       gender = "${gender_abbrev()}"
-      role = "${row.role == '0' ? 8 : 30}"
+      admin = "${row.age > 18 ? 1 : 0}"
     }
   }
 
   table "product" {
     updates {
       name = "${product()}"
-      price = "${digits_n(5)}"
+      price = "${digits_n(3)}"
       merchant = "${company()}"
       brand = "${brand()}"
     }
-
   }
 }
 ```
 
 ```shell
-λ ./bin/dba sample.conf.hcl
+λ ./dba sample.conf.hcl
 ```
 
 ## TODO
 - [] test suite, Travis integration or dockerized test suite
+- [] fix data race in icrowley/fake package, and run anonimyzers in parrallel
 - [] more fake data generators, eg: date, time
 - [] support SQLite, Postgres
 - [] Configurable retries
@@ -84,5 +86,5 @@ You can also build a Docker image to test this:
 
 ```shell
 λ make docker
-λ docker run -i -t dba sample.conf.hcl
+λ docker run -i -t dba test-fixtures/sample.conf.hcl
 ```

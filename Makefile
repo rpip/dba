@@ -12,8 +12,7 @@ all: clean build fmt lint test vet install
 
 build:
 	@echo "+ $@"
-	@go build -tags "$(BUILDTAGS) cgo" -o bin/$(PROJECT) .
-	@echo "DBA saved in ./bin/dba"
+	@go build -tags "$(BUILDTAGS) cgo" .
 
 static:
 	@echo "+ $@"
@@ -37,7 +36,7 @@ vet:
 
 clean:
 	@echo "+ $@"
-	@rm -rf reg bin
+	@rm -rf reg
 
 install:
 	@echo "+ $@"

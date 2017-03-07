@@ -1,6 +1,6 @@
-db "library" {
+db "store" {
   type = "mysql"
-  dsn = "dba:dba123@(:3306)/dbatest?charset=utf8&parseTime=True&loc=Local"
+  dsn = "dba:123456@(:3306)/dbastore?charset=utf8&parseTime=True&loc=Local"
   verbose = true
 
   table "user" {
@@ -27,7 +27,15 @@ db "library" {
     }
 
   }
-  table "blog" {
+}
+
+
+db "blog" {
+  type = "mysql"
+  dsn = "dba:123456@(:3306)/dbablog?charset=utf8&parseTime=True&loc=Local"
+  verbose = true
+
+  table "post" {
     title = "${title()}"
     body = "${paragraphs_n(5)}"
     published = true

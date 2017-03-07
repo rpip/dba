@@ -18,5 +18,5 @@ func main() {
 	kingpin.Parse()
 
 	config := dba.MustParseConfig(*configFile)
-	dba.RunAnonymizers(config)
+	dba.Run(config)
 }

@@ -7,6 +7,6 @@ ADD . /go/src/github.com/rpip/dba
 RUN go get github.com/Masterminds/glide github.com/k0kubun/pp
 RUN make deps && make build
 
-ENTRYPOINT ["./bin/dba"]
+ENTRYPOINT ["./dba"]
 
 CMD ["--help"]

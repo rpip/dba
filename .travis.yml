@@ -1,0 +1,20 @@
+---
+  language: go
+  sudo: false
+  go:
+    - 1.7.x
+    - 1.8.x
+    - tip
+  env:
+    global:
+      - GO15VENDOREXPERIMENT=1
+  install:
+    - go get github.com/golang/lint/golint
+    - go get github.com/Masterminds/glide
+    - go get github.com/k0kubun/pp
+  script:
+    - go build -v
+    - go vet $(go list ./... | grep -v vendor)
+    - test -z "$(golint ./... | grep -v vendor | tee /dev/stderr)"
+    - test -z "$(gofmt -s -l . | grep -v vendor | tee /dev/stderr)"
+    - go test $(go list ./... | grep -v vendor)

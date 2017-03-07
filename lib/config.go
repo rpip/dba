@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/hcl"
+	"github.com/hashicorp/hil"
 )
 
 // DefaultPrimaryKey Table primary key
@@ -15,8 +16,13 @@ const DefaultPrimaryKey = "id"
 // hclConfig is map structure to hold parsed config
 type hclConfig map[string][]map[string][]map[string]interface{}
 
+type templateConfig struct {
+	*hil.EvalConfig
+}
+
 // Config is the HCL config parsed into databases and tables
 type Config struct {
+	templateConfig
 	Databases []*Database
 }
 
@@ -46,14 +52,15 @@ func loadConfig(configFile io.ReadWriter) (hclConfig, error) {
 	return obj, nil
 }
 
-// MustParseConfig parses the DBA config. If an error occurs,execution stops.
-func MustParseConfig(dbaConfig io.ReadWriter) Config {
-	config := Config{}
+// MustParseConfig parses the DBA config. If an error occurs, execution stops.
+func MustParseConfig(configFile io.ReadWriter) *Config {
 
-	conf, err := loadConfig(dbaConfig)
+	conf, err := loadConfig(configFile)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	dbaConfig := &Config{}
 
 	for _, dbNode := range conf["db"] {
 		for dbName, v := range dbNode {
@@ -67,10 +74,10 @@ func MustParseConfig(dbaConfig io.ReadWriter) Config {
 					db.SetMeta(k, dbNodeVal)
 				}
 			}
-			config.Databases = append(config.Databases, db)
+			dbaConfig.Databases = append(dbaConfig.Databases, db)
 		}
 	}
-	return config
+	return dbaConfig
 }
 
 func buildTable(db *Database, dbNodeVal interface{}) {
