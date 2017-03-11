@@ -68,23 +68,68 @@ func (tbl *Table) isAnonymizable() bool {
 
 // Anonymize does the actual table anonymization
 func (tbl *Table) Anonymize(db *Database, tplConfig templateConfig) error {
-
-	columns, updateVals := tbl.GetChangeSets(tplConfig)
-	query := fmt.Sprintf("UPDATE %s SET %s", tbl.Name, columns)
-	// TODO: print to console that table field is being updated
-	fmt.Println(query)
-	res, err := db.Exec(query, updateVals...)
+	rows, err := db.Query(fmt.Sprintf("SELECT * from %s", tbl.Name))
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	cols, err := rows.Columns()
 	if err != nil {
 		log.Fatal(err)
 	}
+	updateCounter := 0
 
-	count, err := res.RowsAffected()
-	if err != nil {
-		log.Fatal(err)
+	for rows.Next() {
+		err = tbl.runUpdate(db, rows, cols, tplConfig)
+		updateCounter++
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
-	log.Printf("%s : %s, %d rows affected", db.Name, tbl.Name, count)
-
+	log.Printf("%s : %s, %d rows affected", db.Name, tbl.Name, updateCounter)
 	return nil
+}
+
+// runUpdate runs the actual row update query
+func (tbl *Table) runUpdate(db *Database, rows *sql.Rows, cols []string, tplConfig templateConfig) error {
+	count := len(cols)
+	columns := make([]interface{}, count)
+	values := make([]interface{}, count)
+
+	for i := range cols {
+		values[i] = &columns[i]
+	}
+	if err := rows.Scan(values...); err != nil {
+		log.Fatal(err)
+	}
+
+	row := make(map[string]interface{})
+
+	for i, col := range cols {
+		var v interface{}
+		val := columns[i]
+		b, ok := val.([]byte)
+		if ok {
+			v = string(b)
+		} else {
+			v = val
+		}
+		row[col] = v
+	}
+	fields, updateVals := tbl.GetChangeSets(tplConfig)
+	query := fmt.Sprintf("UPDATE %s SET %s", tbl.Name, fields)
+
+	var primaryKey string
+	if val, ok := tbl.Metadata["primary_key"]; ok {
+		primaryKey = val.(string)
+	} else {
+		primaryKey = defaultPrimaryKey
+	}
+
+	query += fmt.Sprintf(" WHERE %s = ?", primaryKey)
+	updateVals = append(updateVals, row[primaryKey])
+	_, err := db.Exec(query, updateVals...)
+	return err
 }
 
 // GetChangeSets returns the set of changes to apply to the table

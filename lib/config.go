@@ -10,8 +10,8 @@ import (
 	"github.com/hashicorp/hil"
 )
 
-// DefaultPrimaryKey Table primary key
-const DefaultPrimaryKey = "id"
+// defaultPrimaryKey Table primary key
+const defaultPrimaryKey = "id"
 
 // hclConfig is map structure to hold parsed config
 type hclConfig map[string][]map[string][]map[string]interface{}

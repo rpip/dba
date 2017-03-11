@@ -20,7 +20,7 @@ RUN set -x \
 		libgcc \
 	&& cd /go/src/github.com/rpip/dba \
 	&& go get github.com/Masterminds/glide github.com/k0kubun/pp \
-    && glide install \
+	&& glide install \
 	&& go build -o /usr/bin/dba . \
 	&& apk del .build-deps \
 	&& rm -rf /go \
