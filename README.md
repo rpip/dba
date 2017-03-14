@@ -69,14 +69,14 @@ db "store" {
 ```
 
 ## TODO
-- [] test suite, Travis integration or dockerized test suite
-- [] fix data race in icrowley/fake package, and run anonimyzers in parrallel
-- [] more fake data generators, eg: date, time
-- [] support SQLite, Postgres
-- [] Configurable retries
-- [] Progress indicator on the command line
-- [] Batch updates: build a long query string to run all table updates in one go
-- [] documentation
+- [ ] test suite, Travis integration or dockerized test suite
+- [ ] fix data race in icrowley/fake package, and run anonimyzers in parrallel
+- [ ] more fake data generators, eg: date, time
+- [ ] support SQLite, Postgres
+- [ ] Configurable retries
+- [ ] Progress indicator on the command line
+- [ ] Batch updates: build a long query string to run all table updates in one go
+- [ ] documentation
 
 ## Development
 
