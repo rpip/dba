@@ -70,7 +70,7 @@ db "store" {
 
 ## TODO
 - [ ] test suite, Travis integration or dockerized test suite
-- [ ] fix data race in icrowley/fake package, and run anonimyzers in parrallel
+- [ ] run anonimyzers concurrently
 - [ ] more fake data generators, eg: date, time
 - [ ] support SQLite, Postgres
 - [ ] Configurable retries
