@@ -1,5 +1,5 @@
-hash: 755ff3238e449f264d2a9fefa677e055b8331441775edaab15fb28c452334049
-updated: 2017-03-05T21:05:21.616829532Z
+hash: 640664623c2900a2ad04a50aeb142f149acd1121ed404eb055437081ded3c07c
+updated: 2017-04-02T23:02:00.509332601Z
 imports:
 - name: github.com/alecthomas/template
   version: a0175ee3bccc567396460bf5acd36800cb10c49c
@@ -29,7 +29,7 @@ imports:
   - parser
   - scanner
 - name: github.com/icrowley/fake
-  version: c3d404fe8c1ecc4ac8b6f67f9740777975a1d006
+  version: 3b3219b5a6684b64a425535d9a9a20bd92a4e062
 - name: github.com/k0kubun/pp
   version: d1532fc5d94ecdf2da29e24d7b99721f3287de4a
 - name: github.com/mattn/go-colorable

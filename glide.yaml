@@ -8,5 +8,6 @@ import:
   version: ^1.3.0
 - package: github.com/hashicorp/hil
 - package: github.com/mitchellh/mapstructure
-- package: github.com/icrowley/fake
 - package: github.com/corpix/uarand
+- package: github.com/icrowley/fake
+  version: 3b3219b5a6684b64a425535d9a9a20bd92a4e062
