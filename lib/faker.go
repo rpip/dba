@@ -38,7 +38,7 @@ var (
 		"job_title":             fake.JobTitle,
 		"language":              fake.Language,
 		"latitude":              fake.Latitute,
-		"latitude_degrees":      fake.LatitudeDegress,
+		"latitude_degrees":      fake.LatitudeDegreess,
 		"latitude_direction":    fake.LatitudeDirection,
 		"latitude_minutes":      fake.LatitudeMinutes,
 		"latitude_seconds":      fake.LatitudeSeconds,

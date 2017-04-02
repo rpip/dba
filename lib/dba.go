@@ -47,8 +47,12 @@ func (m *meta) SetMeta(key string, val interface{}) {
 // Table represents the table node in the config file
 type Table struct {
 	meta
-	Updates map[string]interface{}
+	Updates       map[string]interface{}
+	updateCounter int
 }
+
+// TableRow represents a row in a table
+type TableRow map[string]interface{}
 
 // NewTable creates a new Table struct
 func NewTable(tblName string) *Table {
@@ -73,25 +77,21 @@ func (tbl *Table) Anonymize(db *Database, tplConfig templateConfig) error {
 		return err
 	}
 	defer rows.Close()
+
 	cols, err := rows.Columns()
 	if err != nil {
 		log.Fatal(err)
 	}
-	updateCounter := 0
 
 	for rows.Next() {
-		err = tbl.runUpdate(db, rows, cols, tplConfig)
-		updateCounter++
-		if err != nil {
-			log.Fatal(err)
-		}
+		row := tbl.mapScan(rows, cols)
+		tbl.runUpdate(db, row, tplConfig)
 	}
-	log.Printf("%s : %s, %d rows affected", db.Name, tbl.Name, updateCounter)
+	log.Printf("%s : %s, %d rows affected", db.Name, tbl.Name, tbl.updateCounter)
 	return nil
 }
 
-// runUpdate runs the actual row update query
-func (tbl *Table) runUpdate(db *Database, rows *sql.Rows, cols []string, tplConfig templateConfig) error {
+func (tbl *Table) mapScan(rows *sql.Rows, cols []string) TableRow {
 	count := len(cols)
 	columns := make([]interface{}, count)
 	values := make([]interface{}, count)
@@ -103,7 +103,7 @@ func (tbl *Table) runUpdate(db *Database, rows *sql.Rows, cols []string, tplConf
 		log.Fatal(err)
 	}
 
-	row := make(map[string]interface{})
+	row := make(TableRow)
 
 	for i, col := range cols {
 		var v interface{}
@@ -116,6 +116,12 @@ func (tbl *Table) runUpdate(db *Database, rows *sql.Rows, cols []string, tplConf
 		}
 		row[col] = v
 	}
+
+	return row
+}
+
+// runUpdate runs the actual row update query
+func (tbl *Table) runUpdate(db *Database, row TableRow, tplConfig templateConfig) error {
 	fields, updateVals := tbl.GetChangeSets(tplConfig)
 	query := fmt.Sprintf("UPDATE %s SET %s", tbl.Name, fields)
 
@@ -129,6 +135,7 @@ func (tbl *Table) runUpdate(db *Database, rows *sql.Rows, cols []string, tplConf
 	query += fmt.Sprintf(" WHERE %s = ?", primaryKey)
 	updateVals = append(updateVals, row[primaryKey])
 	_, err := db.Exec(query, updateVals...)
+	tbl.updateCounter++
 	return err
 }
 
