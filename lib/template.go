@@ -47,9 +47,10 @@ func newTemplateConfig() templateConfig {
 		},
 	}
 }
-func registerBuiltins(conf *Config) {
-	conf.templateConfig = newTemplateConfig()
-	scope := conf.templateConfig.GlobalScope
+
+func buildTemplateEnv() templateConfig {
+	templateConfig := newTemplateConfig()
+	scope := templateConfig.GlobalScope
 
 	for k := range funcMap {
 		// create a closure over the actual function call
@@ -71,6 +72,8 @@ func registerBuiltins(conf *Config) {
 
 		scope.FuncMap[k] = funcAst
 	}
+
+	return templateConfig
 }
 
 func funcCall(m map[string]interface{}, name string, params ...interface{}) ([]reflect.Value, error) {
@@ -91,16 +94,17 @@ func funcCall(m map[string]interface{}, name string, params ...interface{}) ([]r
 	return result, nil
 }
 
-func mustEvalTemplate(v interface{}, tplConfig templateConfig) (interface{}, error) {
+// EvalTemplate evaluates template if string, otherwise returns value as given
+func EvalTemplate(v interface{}, tplConfig templateConfig) (interface{}, error) {
 	switch v := v.(type) {
 	case string:
-		return evalTemplate(v, tplConfig)
+		return eval(v, tplConfig)
 	default:
 		return v, nil
 	}
 }
 
-func evalTemplate(tmpl string, tplConfig templateConfig) (interface{}, error) {
+func eval(tmpl string, tplConfig templateConfig) (interface{}, error) {
 	tree, err := hil.Parse(tmpl)
 	if err != nil {
 		return nil, err

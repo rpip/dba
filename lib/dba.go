@@ -3,10 +3,9 @@ package dba
 import (
 	"database/sql"
 	"fmt"
+	"io"
 	"log"
 	"strings"
-
-	"github.com/k0kubun/pp"
 )
 
 const (
@@ -146,7 +145,7 @@ func (tbl *Table) GetChangeSets(tplConfig templateConfig) (string, []interface{}
 	var changesets []interface{}
 
 	for k, v := range tbl.Updates {
-		result, err := mustEvalTemplate(v, tplConfig)
+		result, err := EvalTemplate(v, tplConfig)
 		if err != nil {
 			log.Fatal(TemplateError{
 				err:     err,
@@ -216,10 +215,17 @@ func (db *Database) Close() {
 	}
 }
 
-// Run triggers the anonimyzers on the database tables
-func Run(conf *Config) {
-	pp.Print(conf)
-	registerBuiltins(conf)
+// MustRun triggers the anonimyzers on the database tables. If an error occurs, execution stops.
+func MustRun(config io.ReadWriter) {
+
+	conf, err := ParseConfig(config)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// pp.Print(conf)
+	conf.templateConfig = buildTemplateEnv()
 
 	for _, db := range conf.Databases {
 		db.Run(conf.templateConfig)

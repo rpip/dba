@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 
 	"github.com/hashicorp/hcl"
 	"github.com/hashicorp/hil"
@@ -52,15 +51,15 @@ func loadConfig(configFile io.ReadWriter) (hclConfig, error) {
 	return obj, nil
 }
 
-// MustParseConfig parses the DBA config. If an error occurs, execution stops.
-func MustParseConfig(configFile io.ReadWriter) *Config {
-
-	conf, err := loadConfig(configFile)
-	if err != nil {
-		log.Fatal(err)
-	}
+// ParseConfig parses the DBA config
+func ParseConfig(configFile io.ReadWriter) (*Config, error) {
 
 	dbaConfig := &Config{}
+	conf, err := loadConfig(configFile)
+
+	if err != nil {
+		return nil, err
+	}
 
 	for _, dbNode := range conf["db"] {
 		for dbName, v := range dbNode {
@@ -77,7 +76,7 @@ func MustParseConfig(configFile io.ReadWriter) *Config {
 			dbaConfig.Databases = append(dbaConfig.Databases, db)
 		}
 	}
-	return dbaConfig
+	return dbaConfig, nil
 }
 
 func buildTable(db *Database, dbNodeVal interface{}) {

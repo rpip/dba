@@ -17,6 +17,5 @@ func main() {
 	kingpin.CommandLine.Help = "Anonymize database records."
 	kingpin.Parse()
 
-	config := dba.MustParseConfig(*configFile)
-	dba.Run(config)
+	dba.MustRun(*configFile)
 }
