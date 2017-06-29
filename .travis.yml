@@ -19,9 +19,7 @@
     - test -z "$(golint ./... | grep -v vendor | tee /dev/stderr)"
     - test -z "$(gofmt -s -l . | grep -v vendor | tee /dev/stderr)"
     - go test $(go list ./... | grep -v vendor)
-    - mysql -u root < test-fixtures/shop.sql &&
-      mysql -u root < test-fixtures/blog.sql &&
-      ./dba test-fixtures/sample.conf.hcl
+    - ./run-tests.sh
 
   services:
     - mysql
