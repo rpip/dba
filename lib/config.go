@@ -15,6 +15,7 @@ const defaultPrimaryKey = "id"
 // hclConfig is map structure to hold parsed config
 type hclConfig map[string][]map[string][]map[string]interface{}
 
+// EvalConfig is the template rendering context
 type EvalConfig struct {
 	*hil.EvalConfig
 }

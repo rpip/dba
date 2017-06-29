@@ -11,7 +11,7 @@ CREATE TABLE `post` (
   `body` text DEFAULT NULL,
   `published` tinyint(1) DEFAULT '0',
   `create_dttm` timestamp DEFAULT CURRENT_TIMESTAMP,
-  `update_dttm` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `update_dttm` timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY(`id`)
 );
 
