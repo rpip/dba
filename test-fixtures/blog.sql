@@ -10,8 +10,6 @@ CREATE TABLE `post` (
   `title` varchar(255) DEFAULT NULL,
   `body` text DEFAULT NULL,
   `published` tinyint(1) DEFAULT '0',
-  `create_dttm` timestamp DEFAULT CURRENT_TIMESTAMP,
-  `update_dttm` timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY(`id`)
 );
 

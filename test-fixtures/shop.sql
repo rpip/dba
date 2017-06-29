@@ -15,8 +15,6 @@ CREATE TABLE `user` (
   `age` int(2) DEFAULT NULL,
   `gender` varchar(8) DEFAULT NULL,
   `is_admin` tinyint(1) DEFAULT '0',
-  `create_dttm` timestamp DEFAULT CURRENT_TIMESTAMP,
-  `update_dttm` timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY(`user_id`)
 );
 
@@ -39,8 +37,6 @@ CREATE TABLE `product` (
   `merchant` varchar(255) DEFAULT NULL,
   `price` double DEFAULT NULL,
   `qty` int(9) unsigned DEFAULT NULL,
-  `create_dttm` timestamp DEFAULT CURRENT_TIMESTAMP,
-  `update_dttm` timestamp ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY(`id`)
 );
 
