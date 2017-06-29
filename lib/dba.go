@@ -18,10 +18,10 @@ type Anonymizer interface {
 
 	// Anonymize should run the actual anonymization
 	// It should return an error when it fails or nil otherwise.
-	Anonymize(*Database, templateConfig) error
+	Anonymize(*Database, EvalConfig) error
 
 	// GetChangesets returns the set of changes to apply
-	GetChangeSets(templateConfig)
+	GetChangeSets(EvalConfig)
 }
 
 type meta struct {
@@ -70,7 +70,7 @@ func (tbl *Table) isAnonymizable() bool {
 }
 
 // Anonymize does the actual table anonymization
-func (tbl *Table) Anonymize(db *Database, tplConfig templateConfig) error {
+func (tbl *Table) Anonymize(db *Database, Ctx EvalConfig) error {
 	rows, err := db.Query(fmt.Sprintf("SELECT * from %s", tbl.Name))
 	if err != nil {
 		return err
@@ -84,7 +84,8 @@ func (tbl *Table) Anonymize(db *Database, tplConfig templateConfig) error {
 
 	for rows.Next() {
 		row := tbl.mapScan(rows, cols)
-		tbl.runUpdate(db, row, tplConfig)
+		// TODO: handle error
+		tbl.runUpdate(db, row, Ctx)
 	}
 	log.Printf("%s : %s, %d rows affected", db.Name, tbl.Name, tbl.updateCounter)
 	return nil
@@ -120,8 +121,8 @@ func (tbl *Table) mapScan(rows *sql.Rows, cols []string) TableRow {
 }
 
 // runUpdate runs the actual row update query
-func (tbl *Table) runUpdate(db *Database, row TableRow, tplConfig templateConfig) error {
-	fields, updateVals := tbl.GetChangeSets(tplConfig)
+func (tbl *Table) runUpdate(db *Database, row TableRow, Ctx EvalConfig) error {
+	fields, updateVals := tbl.GetChangeSets(Ctx)
 	query := fmt.Sprintf("UPDATE %s SET %s", tbl.Name, fields)
 
 	var primaryKey string
@@ -139,13 +140,13 @@ func (tbl *Table) runUpdate(db *Database, row TableRow, tplConfig templateConfig
 }
 
 // GetChangeSets returns the set of changes to apply to the table
-func (tbl *Table) GetChangeSets(tplConfig templateConfig) (string, []interface{}) {
+func (tbl *Table) GetChangeSets(Ctx EvalConfig) (string, []interface{}) {
 
 	columns := []string{}
 	var changesets []interface{}
 
 	for k, v := range tbl.Updates {
-		result, err := EvalTemplate(v, tplConfig)
+		result, err := EvalTemplate(v, Ctx)
 		if err != nil {
 			log.Fatal(TemplateError{
 				err:     err,
@@ -191,7 +192,7 @@ func (db *Database) Connect() error {
 }
 
 // Run establishes DB connection and anonymizes the tables
-func (db *Database) Run(tplConfig templateConfig) {
+func (db *Database) Run(Ctx EvalConfig) {
 
 	if err := db.Connect(); err != nil {
 		db.Close()
@@ -200,7 +201,7 @@ func (db *Database) Run(tplConfig templateConfig) {
 
 	for _, tbl := range db.Tables {
 		if tbl.isAnonymizable() {
-			if err := tbl.Anonymize(db, tplConfig); err != nil {
+			if err := tbl.Anonymize(db, Ctx); err != nil {
 				db.Close()
 				log.Fatal(err)
 			}
@@ -225,9 +226,9 @@ func MustRun(config io.ReadWriter) {
 	}
 
 	// pp.Print(conf)
-	conf.templateConfig = buildTemplateEnv()
+	conf.EvalConfig = buildTemplateContext()
 
 	for _, db := range conf.Databases {
-		db.Run(conf.templateConfig)
+		db.Run(conf.EvalConfig)
 	}
 }

@@ -4,7 +4,7 @@ import "testing"
 
 func TestEvalFail(t *testing.T) {
 
-	tplConfig := newTemplateConfig()
+	Ctx := newTemplateContext()
 	templates := []string{
 		"${first_name()}",
 		"${first_name()}",
@@ -15,7 +15,7 @@ func TestEvalFail(t *testing.T) {
 	}
 
 	for _, v := range templates {
-		if _, err := EvalTemplate(v, tplConfig); err == nil {
+		if _, err := EvalTemplate(v, Ctx); err == nil {
 			t.Errorf("expect %v to fail", v)
 		}
 	}
@@ -23,7 +23,7 @@ func TestEvalFail(t *testing.T) {
 
 func TestEvalPass(t *testing.T) {
 
-	tplConfig := buildTemplateEnv()
+	Ctx := buildTemplateContext()
 
 	templates := []string{
 		"${digits_n(2)}",
@@ -35,7 +35,7 @@ func TestEvalPass(t *testing.T) {
 	}
 
 	for _, v := range templates {
-		if _, err := EvalTemplate(v, tplConfig); err != nil {
+		if _, err := EvalTemplate(v, Ctx); err != nil {
 			t.Error(err)
 		}
 	}

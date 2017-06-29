@@ -52,7 +52,7 @@ Below is a dump of the config data structure in Go.
 
 ```go
 &dba.Config{
-  templateConfig: dba.templateConfig{
+  EvalConfig: dba.EvalConfig{
     EvalConfig: (*hil.EvalConfig)(nil),
   },
   Databases: []*dba.Database{

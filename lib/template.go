@@ -22,9 +22,8 @@ func (te TemplateError) Error() string {
 		te.field, te.input, te.tblName, te.err.Error())
 }
 
-// newTemplateConfig creates the template evaluation environment
-func newTemplateConfig() templateConfig {
-	return templateConfig{
+func newTemplateContext() EvalConfig {
+	return EvalConfig{
 		&hil.EvalConfig{
 			GlobalScope: &ast.BasicScope{
 				VarMap: map[string]ast.Variable{
@@ -48,9 +47,9 @@ func newTemplateConfig() templateConfig {
 	}
 }
 
-func buildTemplateEnv() templateConfig {
-	templateConfig := newTemplateConfig()
-	scope := templateConfig.GlobalScope
+func buildTemplateContext() EvalConfig {
+	EvalConfig := newTemplateContext()
+	scope := EvalConfig.GlobalScope
 
 	for k := range funcMap {
 		// create a closure over the actual function call
@@ -73,7 +72,7 @@ func buildTemplateEnv() templateConfig {
 		scope.FuncMap[k] = funcAst
 	}
 
-	return templateConfig
+	return EvalConfig
 }
 
 func funcCall(m map[string]interface{}, name string, params ...interface{}) ([]reflect.Value, error) {
@@ -95,22 +94,22 @@ func funcCall(m map[string]interface{}, name string, params ...interface{}) ([]r
 }
 
 // EvalTemplate evaluates template if string, otherwise returns value as given
-func EvalTemplate(v interface{}, tplConfig templateConfig) (interface{}, error) {
+func EvalTemplate(v interface{}, Ctx EvalConfig) (interface{}, error) {
 	switch v := v.(type) {
 	case string:
-		return eval(v, tplConfig)
+		return eval(v, Ctx)
 	default:
 		return v, nil
 	}
 }
 
-func eval(tmpl string, tplConfig templateConfig) (interface{}, error) {
+func eval(tmpl string, Ctx EvalConfig) (interface{}, error) {
 	tree, err := hil.Parse(tmpl)
 	if err != nil {
 		return nil, err
 	}
 
-	result, err := hil.Eval(tree, tplConfig.EvalConfig)
+	result, err := hil.Eval(tree, Ctx.EvalConfig)
 	if err != nil {
 		return nil, err
 	}

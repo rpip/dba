@@ -1,6 +1,6 @@
 db "store" {
   type = "mysql"
-  dsn = "dba:123456@(:3306)/dbastore?charset=utf8&parseTime=True&loc=Local"
+  dsn = "root:@(:3306)/dbastore?charset=utf8&parseTime=True&loc=Local"
   verbose = true
 
   table "user" {
@@ -32,7 +32,7 @@ db "store" {
 
 db "blog" {
   type = "mysql"
-  dsn = "dba:123456@(:3306)/dbablog?charset=utf8&parseTime=True&loc=Local"
+  dsn = "root:@(:3306)/dbablog?charset=utf8&parseTime=True&loc=Local"
   verbose = true
 
   table "post" {

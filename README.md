@@ -68,16 +68,6 @@ db "store" {
 λ ./dba sample.conf.hcl
 ```
 
-## TODO
-- [ ] test suite, Travis integration or dockerized test suite
-- [ ] run anonimyzers concurrently
-- [ ] more fake data generators, eg: date, time
-- [ ] support SQLite, Postgres
-- [ ] Configurable retries
-- [ ] Progress indicator on the command line
-- [ ] Batch updates: build a long query string to run all table updates in one go
-- [ ] documentation
-
 ## Development
 
 Pull requests are welcome. Please make sure the build succeeds and the test suite passes. Also see `HACKING.md` for info on the internals of dba.
