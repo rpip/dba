@@ -2,7 +2,9 @@
 
 # DBA - Database Anonymizer
 
-Tool for anonymizing database records
+#### Tool for anonymizing database records.
+
+Sometimes you need a production data dump to run performance tests,  see how a production release goes and debug production issues. It is however not easy getting production data for many reasons such as privacy concerns for user data, tool to actually anonymize the data among others. Here comes, this data anonymization tool.
 
 *work in progress*
 
